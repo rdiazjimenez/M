@@ -26,7 +26,7 @@
     jsonResponse = Json.Document(apiResponse),
 
     result = try jsonResponse
-            otherwise "Error executing API request"
+            otherwise "Error:" & Text.FromBinary(apiResponse)
     
 in
     result
