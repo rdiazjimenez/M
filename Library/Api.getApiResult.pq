@@ -26,7 +26,7 @@
     jsonResponse = Json.Document(apiResponse),
 
     result = try jsonResponse
-            otherwise "Error: " & Text.From(Json.Document(apiResponse)) & " - " & getApiURL
+            otherwise "Error: "
     
 in
     result
