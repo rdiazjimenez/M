@@ -1,4 +1,4 @@
-(endPointURL as text, pageNum as text, pageSize as text, requestContent as binary) => let
+(endPointURL as text, pageNum as text, pageSize as text, requestContent as text) => let
     
     // Extracción del token
     token = getToken,
@@ -12,10 +12,13 @@
         #"Partner-Id" = partnerId
     ],
 
+    // Convertir texto del content a binary
+    requestContentB = Text.ToBinary(requestContent),
+
     // Solicitud para obtener los clientes
     apiResponse = Web.Contents(endPointURL & pagination, [
         Headers = apiHeaders,
-        Content = requestContent
+        Content = requestContentB
     ]),
 
     // Convertir la respuesta JSON a tabla
