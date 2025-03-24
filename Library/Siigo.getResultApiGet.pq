@@ -1,6 +1,6 @@
 // fnQueryAPI
 let
-    Source = (endPointURL as text, pageNum as text, pageSize as text) => let
+    Source = (endPointURL as text, pageNum as text, pageSize as text, requestContent as binary) => let
         
         // Extracción del token
         token = getToken,
@@ -16,7 +16,8 @@ let
     
         // Solicitud para obtener los clientes
         apiResponse = Web.Contents(endPointURL & pagination, [
-            Headers = apiHeaders
+            Headers = apiHeaders,
+            Content = requestContent
         ]),
     
         // Convertir la respuesta JSON a tabla
