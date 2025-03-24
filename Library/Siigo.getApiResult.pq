@@ -34,4 +34,4 @@
     result = Json.Document(apiResponse)
     
 in
-    getApiURL
+    result
