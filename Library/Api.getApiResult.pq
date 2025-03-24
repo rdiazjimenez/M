@@ -26,7 +26,7 @@
     jsonResponse = Json.Document(apiResponse),
 
     result = try jsonResponse
-            otherwise "Error"
+            otherwise "Error executing API request"
     
 in
     result
