@@ -9,16 +9,16 @@
     postApiURL = endPointURL,
 
     // Solicitud para obtener los clientes
-    postApiResponse = Web.Contents(postApiURL, [
+    makePostRequest = Web.Contents(postApiURL, [
         Headers = apiHeaders,
         Content = Text.ToBinary(postParams)
     ]),
 
-    getApiResponse = Web.Contents(getApiURL, [
+    makeGetRequest = Web.Contents(getApiURL, [
         Headers = apiHeaders
     ]),
 
-    apiResponse = if postParams <> null then postApiResponse else getApiResponse,
+    apiResponse = if postParams <> null then makePostRequest else makeGetRequest,
 
     // Convertir la respuesta JSON a tabla
     result = Json.Document(apiResponse)
