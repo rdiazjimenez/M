@@ -1,4 +1,4 @@
-(endPointURL as text, pageNum as text, pageSize as text, requestContent as text) => let
+(endPointURL as text, pageNum as text, pageSize as text, optional requestContent as text) => let
     
     // Extracción del token
     token = getToken,
@@ -13,13 +13,19 @@
     ],
 
     // Convertir texto del content a binary
-    requestContentB = Text.ToBinary(requestContent),
+    requestContentB = if requestContent <> null then Text.ToBinary(requestContent) else null,
 
     // Solicitud para obtener los clientes
-    apiResponse = Web.Contents(endPointURL & pagination, [
+    apiResponsePOST = Web.Contents(endPointURL & pagination, [
         Headers = apiHeaders,
         Content = requestContentB
     ]),
+
+    apiResponseGET = Web.Contents(endPointURL & pagination, [
+        Headers = apiHeaders
+    ]),
+
+    apiResponse = if requestContentB = null then apiResponsePOST else apiResponseGET,
 
     // Convertir la respuesta JSON a tabla
     result = Json.Document(apiResponse)
