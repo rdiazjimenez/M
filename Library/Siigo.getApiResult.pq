@@ -1,9 +1,8 @@
-(endPointURL as text, optional pageNum as text, optional pageSize as text, optional requestContent as text) => let
+// Minimun pageSize = 10
+(endPointURL as text, optional getParams as text, optional pageNum as text, optional pageSize as text, optional postParams as text) => let
     
     // Extracción del token
     token = getToken,
-
-    pagination = "?page=" & pageNum & "&page_size=" & pageSize,
 
     // Encabezados para la solicitud de clientes con el token JWT
     apiHeaders = [
@@ -12,22 +11,24 @@
         #"Partner-Id" = partnerId
     ],
 
-    endPointURLComplete = if pageNum = null or pageSize = null then endPointURL else endPointURL & pagination, 
+    // Construcción de URL para GET
+    pagination = "?page=" & pageNum ?? 1 & "&page_size=" & pageSize ?? 10,
+    getApiURL = endPointURL & pagination & getParams ?? "1=1",
 
-    // Convertir texto del content a binary
-    requestContentBinary = if requestContent <> null then Text.ToBinary(requestContent) else null,
+    // Construcción de URL para POST
+    postApiURL = endPointURL,
 
     // Solicitud para obtener los clientes
-    apiResponsePOST = Web.Contents(endPointURLComplete, [
+    postApiResponse = Web.Contents(postApiURL, [
         Headers = apiHeaders,
-        Content = requestContentBinary
+        Content = Text.ToBinary(postParams)
     ]),
 
-    apiResponseGET = Web.Contents(endPointURLComplete, [
+    getApiResponse = Web.Contents(getApiURL, [
         Headers = apiHeaders
     ]),
 
-    apiResponse = if requestContentBinary = null then apiResponsePOST else apiResponseGET,
+    apiResponse = if getParams <> null then getApiResponse else postApiResponse,
 
     // Convertir la respuesta JSON a tabla
     result = Json.Document(apiResponse)
