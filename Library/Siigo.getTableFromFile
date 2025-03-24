@@ -1,6 +1,0 @@
-let
-    Source = SiigoGetResult,
-    file_url = Excel.Workbook(AzureStorage.BlobContents(Source[file_url]), null, true)
-    
-in
-    file_url
