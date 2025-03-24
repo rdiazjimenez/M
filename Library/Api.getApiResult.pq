@@ -3,7 +3,7 @@
 
     // Construcción de URL para GET
     pagination = "?page=" & (pageNum ?? "1") & "&page_size=" & (pageSize ?? "10"),
-    getApiURL = endPointURL & pagination & "&" & getParams ?? "1=1",
+    getApiURL = endPointURL & pagination & "&" & (getParams ?? "1=1"),
 
     // Construcción de URL para POST
     postApiURL = endPointURL,
