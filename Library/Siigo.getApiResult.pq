@@ -18,7 +18,7 @@
         Headers = apiHeaders
     ]),
 
-    apiResponse = if getParams <> null then getApiResponse else postApiResponse,
+    apiResponse = if postParams <> null then postApiResponse else getApiResponse,
 
     // Convertir la respuesta JSON a tabla
     result = Json.Document(apiResponse)
