@@ -1,15 +1,5 @@
 // Minimun pageSize = 10
-(endPointURL as text, optional getParams as text, optional pageNum as text, optional pageSize as text, optional postParams as text) => let
-    
-    // Extracción del token
-    token = getToken,
-
-    // Encabezados para la solicitud de clientes con el token JWT
-    apiHeaders = [
-        Authorization = "Bearer " & token,
-        #"Content-Type" = "application/json",
-        #"Partner-Id" = partnerId
-    ],
+(endPointURL as text, apiHeaders as record, optional getParams as text, optional pageNum as text, optional pageSize as text, optional postParams as text) => let
 
     // Construcción de URL para GET
     pagination = "?page=" & (pageNum ?? "1") & "&page_size=" & (pageSize ?? "10"),
