@@ -1,4 +1,4 @@
-(apiParams as record) =>
+(apiParams as record, pageNum as text, pageSize as text) =>
 let
     // Parametros de llamada al API
     /*
@@ -16,8 +16,6 @@ let
     endpointType = endpointData[Type],
     apiHeaders = Record.FieldOrDefault(apiParams, "apiHeaders", ""),
     getParams = Record.FieldOrDefault(apiParams, "getParams", null),
-    pageNum = Record.FieldOrDefault(apiParams, "pageNum", null),
-    pageSize = Record.FieldOrDefault(apiParams, "pageSize", null),
     postParams = Record.FieldOrDefault(apiParams, "postParams", null),
     Source = LibPQ("Api.getApiResult")(endpointURL, endpointType, apiHeaders, getParams, pageNum, pageSize, postParams)
 in
