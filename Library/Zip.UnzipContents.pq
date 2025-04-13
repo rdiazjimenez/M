@@ -1,6 +1,6 @@
 // Unzip
 let
-    Source = (ZIPFile) as function => 
+    Source = (ZIPFile) => 
 let
     ushort = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger16, ByteOrder.LittleEndian),
     uint = BinaryFormat.ByteOrder(BinaryFormat.UnsignedInteger32, ByteOrder.LittleEndian),
