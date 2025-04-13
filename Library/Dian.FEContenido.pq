@@ -2,7 +2,7 @@
 let
     // Your full existing query
     Source = DianFEZip,
-    AddUnzippedColumn = Table.AddColumn(Source, "UnzippedFiles", each unzipFunction([Content]))
+    AddUnzippedColumn = Table.AddColumn(Source, "UnzippedFiles", each unzipFunction([Content])),
     ExpandUnzippedList = Table.ExpandListColumn(AddUnzippedColumn, "UnzippedFiles"),
     ExtractZipMetadata = Table.ExpandRecordColumn(ExpandUnzippedList, "UnzippedFiles", {"FileName", "Content"}, {"FileName", "BinaryContent"}),
     LoadExcelWorkbooks = Table.AddColumn(ExtractZipMetadata, "ExcelTables", each Excel.Workbook([BinaryContent])),
