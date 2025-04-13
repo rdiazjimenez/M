@@ -1,7 +1,7 @@
-(ParamTransfColsDynamicSource as table, ParamTransfColsDynamicMapType as table, Source as table, TypeMap as table) as table =>
+(ParamTransfColsDynamicSource as table, ParamTransfColsDynamicMapType as table) as table =>
 let
-    //Source = ParamTransfColsDynamicSource,
-    //TypeMap = ParamTransfColsDynamicMapType,
+    Source = ParamTransfColsDynamicSource,
+    TypeMap = ParamTransfColsDynamicMapType,
     // Function to map type string to actual M type
     TypeMapFunction = (typeText as text) as type =>
         if typeText = "number" then type number
