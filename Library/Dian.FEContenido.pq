@@ -1,7 +1,7 @@
-(unzipFunction as function, transfColsFunction as function) as table =>
+(unzipFunction as function, transfColsFunction as function, Source as table, mapTypeTable as table) as table =>
 let
     // Your full existing query
-    Source = DianFEZip,
+    //Source = DianFEZip,
     AddUnzippedColumn = Table.AddColumn(Source, "UnzippedFiles", each unzipFunction([Content])),
     ExpandUnzippedList = Table.ExpandListColumn(AddUnzippedColumn, "UnzippedFiles"),
     ExtractZipMetadata = Table.ExpandRecordColumn(ExpandUnzippedList, "UnzippedFiles", {"FileName", "Content"}, {"FileName", "BinaryContent"}),
@@ -15,6 +15,6 @@ let
         "PromotedData",
         Table.ColumnNames(KeepPromotedTables{0}[PromotedData])
     ),
-    TransfColsDynamicStep = transfColsFunction(ExpandInternalColumns, TableDianMapType)
+    TransfColsDynamicStep = transfColsFunction(ExpandInternalColumns, mapTypeTable)
 in
     TransfColsDynamicStep
