@@ -1,4 +1,4 @@
-(ParamTransfColsDynamicSource as table, ParamTransfColsDynamicMapType as table, Source as table, TypeMap as table) as function =>
+(ParamTransfColsDynamicSource as table, ParamTransfColsDynamicMapType as table, Source as table, TypeMap as table) as table =>
 let
     //Source = ParamTransfColsDynamicSource,
     //TypeMap = ParamTransfColsDynamicMapType,
