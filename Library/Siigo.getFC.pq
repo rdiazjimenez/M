@@ -3,7 +3,7 @@ let
     queryTableID = "FC",
     endpointData = LibPQ("Siigo.getEndpointData")(queryTableID),
 
-    getParams = "date_start=" & Date.ToText(paramFechaInicioReportes, "yyyy-MM-dd") & "&date_end=" & Date.ToText(paramFechaFinReportes, "yyyy-MM-dd"),
+    getParams = "start_date=" & Date.ToText(fechaInicio, "yyyy-MM-dd") & "&end_date=" & Date.ToText(fechaFin, "yyyy-MM-dd"),
     postParams = null,
     pageSize = "250",
 
@@ -25,9 +25,9 @@ let
     removeCols = Table.SelectColumns(expandResultsList,{"results"}),
     expandResultsRecords = Table.ExpandListColumn(removeCols, "results"),
     expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "number", "name", "date", "cost_center", "supplier", "total", "balance", "provider_invoice", "discount_type", "items", "retentions", "payments", "metadata"}, {"id", "document", "number", "name", "date", "cost_center", "supplier", "total", "balance", "provider_invoice", "discount_type", "items", "retentions", "payments", "metadata"}),
-    expandItems = Table.ExpandListColumn(expandResults, "items"),
-    expandDetails = Table.ExpandRecordColumn(expandItems, "items", {"account", "customer", "cost_center", "description", "value"}, {"account", "customer.1", "cost_center.1", "description", "value"}),
-    expandAccount = Table.ExpandRecordColumn(expandDetails, "account", {"code", "movement"}, {"code", "movement"}),
-    expandCustomer = Table.ExpandRecordColumn(expandAccount, "customer.1", {"identification"}, {"identification"})
+    expandSupplier = Table.ExpandRecordColumn(expandResults, "supplier", {"identification"}, {"supplier_identification"}),
+    expandProvider_invoice = Table.ExpandRecordColumn(expandSupplier, "provider_invoice", {"prefix", "number"}, {"provider_invoice_prefix", "provider_invoice_number"}),
+    expandDocument = Table.ExpandRecordColumn(expandProvider_invoice, "document", {"id"}, {"document_id"}),
+    changeType = Table.TransformColumnTypes(expandDocument,{{"date", type date}, {"total", type number}, {"balance", type number}})
 in
-    expandCustomer
+    changeType
