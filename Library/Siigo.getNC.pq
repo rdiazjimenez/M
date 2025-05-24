@@ -25,7 +25,10 @@ let
     expandResultsList = Table.ExpandRecordColumn(getPage, "fetchApiRecords", {"pagination", "results", "_links"}, {"pagination", "results", "_links"}),
     removeCols = Table.SelectColumns(expandResultsList,{"results"}),
     expandResultsRecords = Table.ExpandListColumn(removeCols, "results"),
-    expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}, {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}),
-    expandCustomer = Table.ExpandRecordColumn(expandResults, "customer", {"identification"}, {"identification"})
+    expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "number", "name", "date", "invoice", "invoice_data", "reason", "customer", "cost_center", "seller", "total", "items", "payments", "stamp", "mail", "metadata"}, {"id", "document", "number", "name", "date", "invoice", "invoice_data", "reason", "customer", "cost_center", "seller", "total", "items", "payments", "stamp", "mail", "metadata"}),
+    expandInvoice = Table.ExpandRecordColumn(expandResults, "invoice", {"id", "name"}, {"invoice.id", "invoice.name"}),
+    expandInvoice_data = Table.ExpandRecordColumn(expandInvoice, "invoice_data", {"cufe", "number", "date", "prefix"}, {"invoice_data.cufe", "invoice_data.number", "invoice_data.date", "invoice_data.prefix"}),
+    expandCustomer = Table.ExpandRecordColumn(expandInvoice_data, "customer", {"identification"}, {"customer.identification"}),
+    changeType = Table.TransformColumnTypes(expandCustomer,{{"id", type text}, {"number", Int64.Type}, {"name", type text}, {"date", type date}, {"invoice.id", type text}, {"invoice.name", type text}, {"invoice_data.cufe", type text}, {"invoice_data.prefix", type text}, {"customer.identification", type text}, {"cost_center", type text}, {"seller", type text}, {"total", type number}, {"reason", Int64.Type}, {"invoice_data.date", type date}, {"invoice_data.number", Int64.Type}})
 in
-    expandCustomer
+    changeType
