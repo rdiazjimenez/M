@@ -25,9 +25,9 @@ let
     removeCols = Table.SelectColumns(expandResultsList,{"results"}),
     expandResultsRecords = Table.ExpandListColumn(removeCols, "results"),
     expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "number", "name", "date", "cost_center", "supplier", "total", "balance", "provider_invoice", "discount_type", "items", "retentions", "payments", "metadata"}, {"id", "document", "number", "name", "date", "cost_center", "supplier", "total", "balance", "provider_invoice", "discount_type", "items", "retentions", "payments", "metadata"}),
-    expandSupplier = Table.ExpandRecordColumn(expandResults, "supplier", {"identification"}, {"supplier_identification"}),
-    expandProvider_invoice = Table.ExpandRecordColumn(expandSupplier, "provider_invoice", {"prefix", "number"}, {"provider_invoice_prefix", "provider_invoice_number"}),
+    expandSupplier = Table.ExpandRecordColumn(expandResults, "supplier", {"identification"}, {"supplier.identification"}),
+    expandProvider_invoice = Table.ExpandRecordColumn(expandSupplier, "provider_invoice", {"prefix", "number"}, {"provider.invoice_prefix", "provider.invoice_number"}),
     expandDocument = Table.ExpandRecordColumn(expandProvider_invoice, "document", {"id"}, {"document_id"}),
-    changeType = Table.TransformColumnTypes(expandDocument,{{"date", type date}, {"total", type number}, {"balance", type number}})
+    changeType = Table.TransformColumnTypes(expandDocument,{{"date", type date}, {"total", type number}, {"balance", type number}, {"id", type text}, {"name", type text}, {"supplier.identification", type text}, {"provider.invoice_prefix", type text}, {"provider.invoice_number", type text}, {"discount_type", type text}, {"cost_center", type text}, {"document_id", Int64.Type}})
 in
     changeType
