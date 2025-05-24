@@ -24,7 +24,7 @@ let
     expandResultsList = Table.ExpandRecordColumn(getPage, "fetchApiRecords", {"pagination", "results", "_links"}, {"pagination", "results", "_links"}),
     removeCols = Table.SelectColumns(expandResultsList,{"results"}),
     expandResultsRecords = Table.ExpandListColumn(removeCols, "results"),
-    expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}, {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}),
+    expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "number", "name", "date", "cost_center", "supplier", "total", "balance", "provider_invoice", "discount_type", "items", "retentions", "payments", "metadata"}, {"id", "document", "number", "name", "date", "cost_center", "supplier", "total", "balance", "provider_invoice", "discount_type", "items", "retentions", "payments", "metadata"}),
     expandItems = Table.ExpandListColumn(expandResults, "items"),
     expandDetails = Table.ExpandRecordColumn(expandItems, "items", {"account", "customer", "cost_center", "description", "value"}, {"account", "customer.1", "cost_center.1", "description", "value"}),
     expandAccount = Table.ExpandRecordColumn(expandDetails, "account", {"code", "movement"}, {"code", "movement"}),
