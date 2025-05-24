@@ -24,10 +24,11 @@ let
     expandResultsList = Table.ExpandRecordColumn(getPage, "fetchApiRecords", {"pagination", "results", "_links"}, {"pagination", "results", "_links"}),
     removeCols = Table.SelectColumns(expandResultsList,{"results"}),
     expandResultsRecords = Table.ExpandListColumn(removeCols, "results"),
-    expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}, {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}),
+    expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "number", "name", "date", "items", "observations", "metadata"}, {"id", "document", "number", "name", "date", "items", "observations", "metadata"}),
     expandItems = Table.ExpandListColumn(expandResults, "items"),
-    expandDetails = Table.ExpandRecordColumn(expandItems, "items", {"account", "customer", "cost_center", "description", "value"}, {"account", "customer.1", "cost_center.1", "description", "value"}),
-    expandAccount = Table.ExpandRecordColumn(expandDetails, "account", {"code", "movement"}, {"code", "movement"}),
-    expandCustomer = Table.ExpandRecordColumn(expandAccount, "customer.1", {"identification"}, {"identification"})
+    expandItemsDetails = Table.ExpandRecordColumn(expandItems, "items", {"account", "customer", "cost_center", "description", "value", "tax", "due", "product"}, {"account", "customer", "cost_center", "description", "value", "tax", "due", "product"}),
+    expandAccount = Table.ExpandRecordColumn(expandItemsDetails, "account", {"code", "movement"}, {"account.code", "account.movement"}),
+    expandedCustomer = Table.ExpandRecordColumn(expandAccount, "customer", {"identification"}, {"customer.identification"}),
+    changeType = Table.TransformColumnTypes(expandedCustomer,{{"number", Int64.Type}, {"name", type text}, {"date", type date}, {"account.code", type text}, {"account.movement", type text}, {"customer.identification", type text}, {"cost_center", type text}, {"description", type text}, {"observations", type text}, {"value", type number}, {"id", type text}})
 in
-    expandCustomer
+    changeType
