@@ -26,9 +26,9 @@ let
     expandResultsRecords = Table.ExpandListColumn(removeCols, "results"),
     expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "number", "name", "date", "items", "observations", "metadata"}, {"id", "document", "number", "name", "date", "items", "observations", "metadata"}),
     expandItems = Table.ExpandListColumn(expandResults, "items"),
-    expandItemsDetails = Table.ExpandRecordColumn(expandItems, "items", {"account", "customer", "cost_center", "description", "value", "tax", "due", "product"}, {"account", "customer", "cost_center", "description", "value", "tax", "due", "product"}),
+    expandItemsDetails = Table.ExpandRecordColumn(expandItems, "items", {"account", "customer", "cost_center", "description", "value"}, {"account", "customer", "cost_center", "description", "value"}),
     expandAccount = Table.ExpandRecordColumn(expandItemsDetails, "account", {"code", "movement"}, {"account.code", "account.movement"}),
-    expandedCustomer = Table.ExpandRecordColumn(expandAccount, "customer", {"identification"}, {"customer.identification"}),
-    changeType = Table.TransformColumnTypes(expandedCustomer,{{"number", Int64.Type}, {"name", type text}, {"date", type date}, {"account.code", type text}, {"account.movement", type text}, {"customer.identification", type text}, {"cost_center", type text}, {"description", type text}, {"observations", type text}, {"value", type number}, {"id", type text}})
+    expandCustomer = Table.ExpandRecordColumn(expandAccount, "customer", {"identification"}, {"customer.identification"}),
+    changeType = Table.TransformColumnTypes(expandCustomer,{{"id", type text}, {"name", type text}, {"account.movement", type text}, {"customer.identification", type text}, {"cost_center", type text}, {"description", type text}, {"observations", type text}, {"value", type number}, {"account.code", type text}, {"date", type date}})
 in
     changeType
