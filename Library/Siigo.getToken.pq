@@ -1,13 +1,17 @@
+(ParamTable as table) =>
 let
-    Source = (authUrl, username, accessKey, partnerId) =>
-let
-    // Variables configurables
-    //username = PAR_username,
-    //accessKey = PAR_accessKey,
-    //partnerId = PAR_partnerId,  // Cambia según el nombre real de tu aplicación
 
-    // URL para obtener el token
-    //authUrl = PAR_apiUrl,
+    getSiigoValue = (filterName as text) =>
+    let
+        FilterName = Table.SelectRows(ParamTable, each ([name] = filterName)),
+        GetValue = FilterName{0}[value]
+    in
+        GetValue,
+
+    username = getSiigoValue("username"),
+    accessKey = getSiigoValue("accessKey"),
+    partnerId = getSiigoValue("partnerId"),
+    apiUrl =  getSiigoValue("apiUrl"),
 
     // Cuerpo de la solicitud para obtener el token
     requestBody = Text.ToBinary("{""username"": """ & username & """, ""access_key"": """ & accessKey & """}"),
@@ -19,7 +23,7 @@ let
     ],
 
     // Solicitud para obtener el token
-    authResponse = Json.Document(Web.Contents(authUrl, [
+    authResponse = Json.Document(Web.Contents(apiUrl, [
         Headers = authHeaders,
         Content = requestBody,
         ManualStatusHandling = {200, 400, 401}
@@ -30,5 +34,3 @@ let
 
 in
     token
-in
-    Source
