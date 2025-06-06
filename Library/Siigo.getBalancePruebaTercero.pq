@@ -1,6 +1,6 @@
 (filtroBalanceTercero as text) =>
 let
-    apiHeaders = LibPQ("Api.createApiHeaders")(getToken, paramSiigoApiPartnerId),
+    apiHeaders = LibPQ("Api.createApiHeaders")(getToken, fnGetSiigoParam("partnerId")),
     queryTableID = "BPT",
     getParams = null,
     postParams = filtroBalanceTercero,
