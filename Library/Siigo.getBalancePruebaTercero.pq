@@ -1,6 +1,8 @@
-(filtroBalanceTercero as text) =>
+(filtroBalanceTercero as text, SiigoParamTable as table) =>
 let
-    apiHeaders = LibPQ("Api.createApiHeaders")(getToken, fnGetSiigoParam("partnerId")),
+    token = LibPQ("Siigo.getToken")(SiigoParamTable),
+    partnerId =  Table.SelectRows(SiigoParamTable, each ([name] = "partnerId")){0}[value],
+    apiHeaders = LibPQ("Api.createApiHeaders")(token, partnerId),
     queryTableID = "BPT",
     getParams = null,
     postParams = filtroBalanceTercero,
