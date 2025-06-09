@@ -15,9 +15,6 @@ let
     getPage = Table.AddColumn(toTable, "fetchApiRecords", each LibPQ("Siigo.getApiData")(EndpointData, ApiConnInfo, endpointID, getParams, Text.From([Column1]), pageSize)),
     expandResultsList = Table.ExpandRecordColumn(getPage, "fetchApiRecords", {"pagination", "results", "_links"}, {"pagination", "results", "_links"}),
     removeCols = Table.SelectColumns(expandResultsList,{"results"}),
-    expandResultsRecords = Table.ExpandListColumn(removeCols, "results"),
-    expandResults = Table.ExpandRecordColumn(expandResultsRecords, "results", {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}, {"id", "document", "prefix", "number", "name", "date", "customer", "cost_center", "seller", "total", "balance", "observations", "items", "payments", "stamp", "mail", "metadata", "public_url"}),
-    expandCustomer = Table.ExpandRecordColumn(expandResults, "customer", {"identification"}, {"identification"}),
-    changeType = Table.TransformColumnTypes(expandCustomer,{{"id", type text}, {"seller", type text}, {"identification", type text}, {"name", type text}, {"observations", type text}, {"public_url", type text}, {"number", Int64.Type}, {"date", type date}, {"cost_center", type text}, {"total", type number}, {"balance", type number}})
+    expandResultsRecords = Table.ExpandListColumn(removeCols, "results")
 in
-    changeType
+    expandResultsRecords
