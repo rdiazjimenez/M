@@ -27,8 +27,8 @@ let
 
     getSiigoValue = (filterName as text) =>
         let
-            FilterName = Table.SelectRows(SiigoApiInfo, each Text.Lower([name]) = Text.Lower(filterName)),
-            GetValue = FilterName{0}[value]
+            FilterName = Table.SelectRows(SiigoApiInfo, each Text.Lower([Name]) = Text.Lower(filterName)),
+            GetValue = FilterName{0}[Value]
         in
             GetValue,
 
