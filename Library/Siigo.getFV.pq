@@ -1,16 +1,14 @@
-(fechaInicio as date, fechaFin as date) =>
+(fechaInicio as date,
+ fechaFin as date,
+ EndpointData as table,
+ ApiConnInfo as table) =>
 let
-    /*
-    fechaInicio = #date(2025, 5, 1),
-    fechaFin = #date(2025, 6, 30),
-    */
-
     endpointID = "FV",
     getParams = "date_start=" & Date.ToText(fechaInicio, "yyyy-MM-dd") & "&date_end=" & Date.ToText(fechaFin, "yyyy-MM-dd"),
     pageSize = "100",
 
     // Call the function with the parameters
-    ApiResult = LibPQ("Siigo.getApiData")(SiigoEndpoint, SiigoParam, endpointID, getParams, "1", pageSize),
+    ApiResult = LibPQ("Siigo.getApiData")(EndpointData, ApiConnInfo, endpointID, getParams, "1", pageSize),
     total_results = Number.RoundUp(Number.From(ApiResult[pagination][total_results]) / Number.From(pageSize)),
     ListNumbers = List.Numbers(1,total_results,1),
     toTable = Table.FromList(ListNumbers, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
