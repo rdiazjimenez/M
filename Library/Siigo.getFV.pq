@@ -5,7 +5,7 @@ let
     fechaFin = #date(2025, 6, 30),
     */
 
-    endpointID = "FV"
+    endpointID = "FV",
     getParams = "date_start=" & Date.ToText(fechaInicio, "yyyy-MM-dd") & "&date_end=" & Date.ToText(fechaFin, "yyyy-MM-dd"),
     pageSize = "100",
 
