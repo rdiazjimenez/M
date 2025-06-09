@@ -1,5 +1,5 @@
 // =============================================
-// Function: ApiConn
+// Function: GetApiConnInfo
 // Description:
 //   Retrieves a Siigo API token and builds authentication headers.
 // Parameters:
