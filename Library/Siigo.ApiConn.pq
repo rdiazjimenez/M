@@ -51,14 +51,14 @@ let
     ])),
 
     token = if Record.HasFields(authResponse, "access_token") then authResponse[access_token] else error "No se encontró el token en la respuesta.",
-    tokenRow = #table({"name", "value"}, {{"access_token", token}}),
+    tokenRow = #table({"Name", "Value"}, {{"access_token", token}}),
     
     apiHeadersRecord = [
         Authorization = "Bearer " & token,
         #"Content-Type" = "application/json",
         #"Partner-Id" = partnerId
     ],
-    apiHeadersRow = #table({"name", "value"}, {{"api_headers", apiHeadersRecord}}),
+    apiHeadersRow = #table({"Name", "Value"}, {{"api_headers", apiHeadersRecord}}),
 
     resultTable = Table.Combine({SiigoApiInfo, tokenRow, apiHeadersRow})
 in
