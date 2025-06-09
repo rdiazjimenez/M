@@ -4,7 +4,7 @@
  ApiConnInfo as table) =>
 let
     endpointID = "FV",
-    getParams = "date_start=" & Date.ToText(fechaInicio, "yyyy-MM-dd") & "&date_end=" & Date.ToText(fechaFin, "yyyy-MM-dd"),
+    getParams = "date_start=" & Date.ToText(fechaInicio, "yyyy-MM-dd") & "&date_end=" & Date.ToText(Date.AddDays(fechaFin, 1), "yyyy-MM-dd"),
     pageSize = "100",
 
     // Call the function with the parameters
