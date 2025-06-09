@@ -1,15 +1,13 @@
-(filtroBalanceTercero as text, SiigoParamTable as table) =>
+(filtroBalanceTercero as text,
+ EndpointData as table,
+ ApiConnInfo as table) =>
 let
-    token = LibPQ("Siigo.getToken")(SiigoParamTable),
-    partnerId =  Table.SelectRows(SiigoParamTable, each ([name] = "partnerId")){0}[value],
-    apiHeaders = LibPQ("Api.createApiHeaders")(token, partnerId),
-    queryTableID = "BPT",
-    getParams = null,
-    postParams = filtroBalanceTercero,
-    pageNum = null,
-    pageSize = null,
-    endpointData = LibPQ("Siigo.getEndpointData")(queryTableID),
-    apiResult = LibPQ("Api.getApiResult")(endpointData[endpointURL], endpointData[Type], apiHeaders, getParams, pageNum, pageSize, postParams),
+    endpointID = "BPT",
+    getParams = filtroBalanceTercero,
+    pageSize = "100",
+
+    // Call the function with the parameters
+    ApiResult = LibPQ("Siigo.getApiData")(EndpointData, ApiConnInfo, endpointID, getParams, "1", pageSize),
     fileResult = LibPQ("Siigo.getAzureFileFromURL")(apiResult),
     Sheet = fileResult{[Item="bal-prueba-por-tercero",Kind="Sheet"]}[Data],
     DateText = Sheet{3}[Column1],
