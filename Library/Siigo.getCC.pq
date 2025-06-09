@@ -3,11 +3,6 @@
  EndpointData as table,
  ApiConnInfo as table) =>
 let
-    /*
-    fechaInicio = #date(2025, 5, 1),
-    fechaFin = #date(2025, 6, 30),
-    */
-
     endpointID = "CC",
     getParams = "date_start=" & Date.ToText(fechaInicio, "yyyy-MM-dd") & "&date_end=" & Date.ToText(fechaFin, "yyyy-MM-dd"),
     pageSize = "100",
