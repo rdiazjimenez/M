@@ -1,5 +1,13 @@
-(SiigoEndpointTable as table, tableID as text) =>
+(EndPointData as table,
+ ApiConnInfo as table,
+ EndPointID as text,
+ optional params as text,
+ optional pageNum as text,
+ optional pageSize as text) =>
 let
-    Result = Table.SelectRows(SiigoEndpointTable, each ([ID] = tableID)){0}
+    endPointData = LibPQ("Siigo.getEndpointData")(EndPointData, EndPointID),
+    siigoApiConnInfo = LibPQ("Siigo.GetApiConnInfo")(EndPointData),
+    Source = getApiResult(endPointData[endpointUrl], endPointData[Type], siigoApiConnInfo[api_headers], params, pageNum, pageSize),
+    results = Source[results]
 in
-    Result
+    results
