@@ -7,7 +7,7 @@
 let
     endPointData = LibPQ("Siigo.getEndpointData")(EndPointData, EndPointID),
     siigoApiConnInfo = LibPQ("Siigo.getApiConnInfo")(EndPointData),
-    Source = getApiResult(endPointData[endpointUrl], endPointData[Type], siigoApiConnInfo[api_headers], params, pageNum, pageSize),
+    Source =  LibPQ("Api.getApiResult")(endPointData[endpointUrl], endPointData[Type], siigoApiConnInfo[api_headers], params, pageNum, pageSize),
     results = Source[results]
 in
     results
