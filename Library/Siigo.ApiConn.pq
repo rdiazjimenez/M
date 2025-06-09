@@ -17,7 +17,7 @@
 (SiigoApiInfo as table) as table =>
 let
     requiredFields = {"username", "accessKey", "partnerId", "apiUrl"},
-    existingFields = List.Transform(SiigoApiInfo[name], each Text.Lower(_)),
+    existingFields = List.Transform(SiigoApiInfo[Name], each Text.Lower(_)),
     missingFields = List.Select(requiredFields, each not List.Contains(existingFields, Text.Lower(_))),
 
     _ = if List.Count(missingFields) > 0 then
