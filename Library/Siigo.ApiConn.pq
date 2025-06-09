@@ -14,7 +14,7 @@
 //       * Row with name = "api_headers", value = <record with headers>
 // =============================================
 
-(SiigoApiInfo as table) as table =>
+(SiigoApiInfo as table) as record =>
 let
     requiredFields = {"username", "accessKey", "partnerId", "apiUrl"},
     existingFields = List.Transform(SiigoApiInfo[Name], each Text.Lower(_)),
@@ -60,6 +60,8 @@ let
     ],
     apiHeadersRow = #table({"Name", "Value"}, {{"api_headers", apiHeadersRecord}}),
 
-    resultTable = Table.Combine({SiigoApiInfo, tokenRow, apiHeadersRow})
+    resultTable = Table.Combine({SiigoApiInfo, tokenRow, apiHeadersRow}),
+
+    resultRecord = Record.FromTable(resultTable)
 in
-    resultTable
+    resultRecord
