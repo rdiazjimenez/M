@@ -15,7 +15,7 @@ let
     removeBottomRows = Table.RemoveLastN(removeTopRows,2),
     promoteHeaders = Table.PromoteHeaders(removeBottomRows, [PromoteAllScalars=true]),
     addColMovDebCre = Table.AddColumn(promoteHeaders, "MovimientoDebitoCredito", each [Movimiento Débito] - [Movimiento Crédito], type number),
-    jsonPostParams = Json.Document(postParams),
+    jsonPostParams = Json.Document(getParams),
     startDate = #date(jsonPostParams[year], jsonPostParams[month_start], 1),
     endDate = #date(jsonPostParams[year], jsonPostParams[month_end], 1),
     addDateCol = Table.AddColumn(addColMovDebCre, "Fecha reporte", each Date.ToText(endDate, "yyyy-MM-dd")),
