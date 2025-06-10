@@ -8,7 +8,7 @@ let
 
     // Call the function with the parameters
     ApiResult = LibPQ("Siigo.getApiData")(EndpointData, ApiConnInfo, endpointID, getParams, "1", pageSize),
-    fileResult = LibPQ("Siigo.getAzureFileFromURL")(apiResult),
+    fileResult = LibPQ("Siigo.getAzureFileFromURL")(ApiResult),
     Sheet = fileResult{[Item="bal-prueba-por-tercero",Kind="Sheet"]}[Data],
     DateText = Sheet{3}[Column1],
     removeTopRows = Table.Skip(Sheet,4),
