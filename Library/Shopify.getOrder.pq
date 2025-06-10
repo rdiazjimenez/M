@@ -90,7 +90,7 @@ let
             {"Metodo", type text},
             {"Transaction: Status", type text},
             {"Transaction: Shop Currency Amount", type number},
-            {"Transaction: Processed At", type date}
+            {"Transaction: Processed At", type datetimezone}
         }
     ),
 
