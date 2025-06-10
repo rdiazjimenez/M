@@ -20,6 +20,6 @@ let
     endDate = #date(jsonPostParams[year], jsonPostParams[month_end], 1),
     addDateCol = Table.AddColumn(addColMovDebCre, "Fecha inicio", each Date.ToText(startDate, "yyyy-MM-dd")),
     addDateCol2 = Table.AddColumn(addColMovDebCre, "Fecha fin", each Date.ToText(endDate, "yyyy-MM-dd")),
-    changeType = Table.TransformColumnTypes(addDateCol2,{{"Nivel", type text}, {"Transaccional", type text}, {"Código cuenta contable", type text}, {"Nombre Cuenta contable", type text}, {"Identificación", type text}, {"Sucursal", type text}, {"Nombre tercero", type text}, {"Saldo Inicial", type number}, {"Movimiento Débito", type number}, {"Movimiento Crédito", type number}, {"Saldo final", type number}, {"Fecha reporte", type date}})
+    changeType = Table.TransformColumnTypes(addDateCol2,{{"Nivel", type text}, {"Transaccional", type text}, {"Código cuenta contable", type text}, {"Nombre Cuenta contable", type text}, {"Identificación", type text}, {"Sucursal", type text}, {"Nombre tercero", type text}, {"Saldo Inicial", type number}, {"Movimiento Débito", type number}, {"Movimiento Crédito", type number}, {"Saldo final", type number}, {"Fecha inicio", type date}, {"Fecha fin", type date}})
 in
     changeType
