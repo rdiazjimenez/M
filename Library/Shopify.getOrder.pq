@@ -94,12 +94,13 @@ let
         }
     ),
 
+    // 9. Change ProcessAt type
     NormalizeProcessAt = Table.TransformColumnTypes(SetInitialColumnTypes, {{"Transaction: Processed At", type date}}),
 
-    // 9. Sort rows by order name
+    // 10. Sort rows by order name
     SortByName = Table.Sort(NormalizeProcessAt, {{"Name", Order.Ascending}}),
 
-    // 10. Reorder columns for final output
+    // 11. Reorder columns for final output
     ReorderFinalColumns = Table.ReorderColumns(
         SortByName,
         {"Source.Name", "Name", "Created At", "Price: Current Total", "Payment: Status", "Fecha pago", "Factura venta", "Metodo"}
