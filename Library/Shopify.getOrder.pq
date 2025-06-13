@@ -34,7 +34,7 @@ let
                 ChangedType1 = Table.TransformColumnTypes(ChangedTypeWithLocale, {{"Price: Current Total", type number}, {"Tax 1: Rate", type number}}),
                 RemovedOtherColumns = Table.SelectColumns(
                     ChangedType1,
-                    {"Name", "Created At", "Price: Current Subtotal", "Tax 1: Price", "Price: Total Discount", "Price: Total Shipping", "Price: Current Total", "Payment: Status", "Top Row", "Line: Type", "Line: Tax 1 Price", "Line: Fulfillment Status", "Transaction: Processed At", "Transaction: Currency", "Transaction: Shop Currency Amount", "Transaction: Status", "Transaction: Gateway", "Metafield: custom.fecha_de_pago [date]", "Metafield: custom.metodo_de_pago [single_line_text_field]", "Factura venta"}
+                    {"Name", "Created At", "Price: Current Subtotal", "Tax 1: Price", "Price: Total Discount", "Price: Total Shipping", "Price: Current Total", "Payment: Status", "Top Row", "Line: Type", "Line: Tax 1 Price", "Line: Fulfillment Status", "Transaction: Processed At", "Transaction: Currency", "Transaction: Shop Currency Amount", "Transaction: Status", "Transaction: Gateway", "Metafield: custom.fecha_de_pago [date]", "Metafield: custom.metodo_de_pago [single_line_text_field]", "Factura venta", "Tags"}
                 ),
                 RenamedMetodo = Table.RenameColumns(RemovedOtherColumns, {{"Metafield: custom.metodo_de_pago [single_line_text_field]", "Metodo"}}),
                 ChangedType2 = Table.TransformColumnTypes(
@@ -63,7 +63,7 @@ let
         KeepRelevantColumns,
         "TransformedData",
         {
-            "Name", "Created At", "Price: Current Subtotal", "Tax 1: Price", "Price: Total Discount", "Price: Total Shipping", "Price: Current Total", "Payment: Status", "Top Row", "Line: Type", "Line: Tax 1 Price", "Line: Fulfillment Status", "Transaction: Processed At", "Transaction: Currency", "Transaction: Shop Currency Amount", "Transaction: Status", "Transaction: Gateway", "Fecha pago", "Metodo", "Factura venta"
+            "Name", "Created At", "Price: Current Subtotal", "Tax 1: Price", "Price: Total Discount", "Price: Total Shipping", "Price: Current Total", "Payment: Status", "Top Row", "Line: Type", "Line: Tax 1 Price", "Line: Fulfillment Status", "Transaction: Processed At", "Transaction: Currency", "Transaction: Shop Currency Amount", "Transaction: Status", "Transaction: Gateway", "Fecha pago", "Metodo", "Factura venta", "Tags"
         }
     ),
 
@@ -90,7 +90,8 @@ let
             {"Metodo", type text},
             {"Transaction: Status", type text},
             {"Transaction: Shop Currency Amount", type number},
-            {"Transaction: Processed At", type datetimezone}
+            {"Transaction: Processed At", type datetimezone},
+            {"Tags", type text}
         }
     ),
 
