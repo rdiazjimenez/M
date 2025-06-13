@@ -20,14 +20,30 @@ let
                 Orders1 = ExcelData{[Name="Orders"]}[Data],
                 PromotedHeaders = Table.PromoteHeaders(Orders1, [PromoteAllScalars=true]),
                 InsertedFacturaVenta = Table.AddColumn(
-                    PromotedHeaders, "Factura venta",
-                    each
-                        if Text.BetweenDelimiters([Tags], " ", ",") <> "" then
-                            Text.BetweenDelimiters([Tags], " ", ",")
-                        else if [Tags] = "no_facturar" then
-                            "no_facturar"
-                        else
-                            null,
+                    PromotedHeaders, 
+                    "Factura venta",
+                    each 
+                        let
+                            tag = [Tags],
+                            posFV = Text.PositionOf(tag, "FV"),
+                            extrae = 
+                                if posFV >= 0 then
+                                    let
+                                        startPos = posFV,
+                                        espacios = List.Select(Text.PositionOfAny(tag, {" "}, startPos + 2), each _ > startPos),
+                                        endPos = if List.Count(espacios) > 0 then List.First(espacios) else Text.Length(tag),
+                                        len = endPos - startPos,
+                                        fv = Text.Middle(tag, startPos, len),
+                                        // Si termina en coma, la quitamos
+                                        resultado = if Text.EndsWith(fv, ",") then Text.BeforeDelimiter(fv, ",") else fv
+                                    in
+                                        resultado
+                                else if tag = "no_facturar" then
+                                    "no_facturar"
+                                else
+                                    null
+                        in
+                            extrae,
                     type text
                 ),
                 ChangedTypeWithLocale = Table.TransformColumnTypes(InsertedFacturaVenta, {{"Created At", type datetimezone}}, "en-US"),
