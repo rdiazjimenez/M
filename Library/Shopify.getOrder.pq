@@ -20,32 +20,54 @@ let
                 Orders1 = ExcelData{[Name="Orders"]}[Data],
                 PromotedHeaders = Table.PromoteHeaders(Orders1, [PromoteAllScalars=true]),
                 InsertedFacturaVenta = Table.AddColumn(
-                    PromotedHeaders, 
-                    "Factura venta",
-                    each 
-                        let
-                            tag = [Tags],
-                            posFV = Text.PositionOf(tag, "FV"),
-                            extrae = 
-                                if posFV >= 0 then
-                                    let
-                                        startPos = posFV,
-                                        espacios = List.Select(Text.PositionOfAny(tag, {" "}, startPos + 2), each _ > startPos),
-                                        endPos = if List.Count(espacios) > 0 then List.First(espacios) else Text.Length(tag),
-                                        len = endPos - startPos,
-                                        fv = Text.Middle(tag, startPos, len),
-                                        // Si termina en coma, la quitamos
-                                        resultado = if Text.EndsWith(fv, ",") then Text.BeforeDelimiter(fv, ",") else fv
-                                    in
-                                        resultado
-                                else if tag = "no_facturar" then
-                                    "no_facturar"
-                                else
-                                    null
-                        in
-                            extrae,
-                    type text
-                ),
+    PromotedHeaders,
+    "Factura venta",
+    each
+        let
+            tag = [Tags],
+            extrae =
+                if tag <> null and Text.Length(tag) > 0 then
+                    let
+                        posFV = Text.PositionOf(tag, "FV"),
+                        posAMMG = Text.PositionOf(tag, "AMMG"),
+                        prefijo = if posFV >= 0 then "FV" else if posAMMG >= 0 then "AMMG" else null,
+                        posPrefijo = if prefijo = "FV" then posFV else if prefijo = "AMMG" then posAMMG else null
+                    in
+                        if prefijo = "FV" then
+                            let
+                                textoRestante = Text.Middle(tag, posPrefijo),
+                                // Busca el primer espacio o coma
+                                posDelim = Text.PositionOfAny(textoRestante, {" ", ","}),
+                                endRelPos = if posDelim >= 0 then posDelim else Text.Length(textoRestante),
+                                resultadoExtraido = Text.Start(textoRestante, endRelPos),
+                                resultadoLimpio = Text.Trim(resultadoExtraido)
+                            in
+                                resultadoLimpio
+                        else if prefijo = "AMMG" then
+                            let
+                                textoRestante = Text.Middle(tag, posPrefijo),
+                                listaCaracteres = Text.ToList(textoRestante),
+                                posiciones = List.Positions(listaCaracteres),
+                                // Busca posiciones de espacio o coma
+                                delimitadores = List.Select(posiciones, (i) => listaCaracteres{i} = " " or listaCaracteres{i} = ","),
+                                endRelPos = if List.Count(delimitadores) >= 2 then delimitadores{1} else Text.Length(textoRestante),
+                                resultadoExtraido = Text.Start(textoRestante, endRelPos),
+                                resultadoLimpio = Text.Trim(resultadoExtraido)
+                            in
+                                resultadoLimpio
+                        else if tag = "no_facturar" then
+                            "no_facturar"
+                        else
+                            null
+                else
+                    null
+        in
+            extrae,
+    type text
+)
+
+
+,
                 ChangedTypeWithLocale = Table.TransformColumnTypes(InsertedFacturaVenta, {{"Created At", type datetimezone}}, "en-US"),
                 ChangedType1 = Table.TransformColumnTypes(ChangedTypeWithLocale, {{"Price: Current Total", type number}, {"Tax 1: Rate", type number}}),
                 RemovedOtherColumns = Table.SelectColumns(
