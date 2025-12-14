@@ -39,18 +39,26 @@ let
         AddColumns2 = Table.AddColumn(AddColumns1, "Month", each 
             Date.ToText([Date], "MMMM", "es-ES"), type text),
             
-        AddColumns3 = Table.AddColumn(AddColumns2, "Year", each 
+        AddColumns3 = Table.AddColumn(AddColumns2, "YYYY", each 
             Date.Year([Date]), type number),
             
-        AddColumns4 = Table.AddColumn(AddColumns3, "Quarter", each 
+        AddColumns4 = Table.AddColumn(AddColumns3, "YYYY-Q", each 
             Text.From(Date.Year([Date])) & "-T" & Text.From(Date.QuarterOfYear([Date])), type text),
             
         AddColumns5 = Table.AddColumn(AddColumns4, "EndOfMonth", each 
             Date.EndOfMonth([Date]), type date),
+        
+        AddColumns6 = Table.AddColumn(AddColumns5, "MM", each 
+            Text.PadStart(Text.From(Date.Month([Date])), 2, "0"), type text),
+        
+        AddColumns7 = Table.AddColumn(AddColumns6, "M", each 
+            Date.Month([Date]), type number),
+        AddColumns8 = Table.AddColumn(AddColumns7, "Q", each 
+            Date.QuarterOfYear([Date]), type number),
 
         // 4. Reordenar y renombrar (Opcional)
-        FinalTable = Table.ReorderColumns(AddColumns5, 
-            {"Date", "EndOfMonth", "YYYYMM", "Year", "Quarter", "Month", "ShortMonth"})
+        FinalTable = Table.ReorderColumns(AddColumns8, 
+            {"Date", "EndOfMonth", "YYYYMM", "YYYY", "MM", "M", "YYYY-Q", "Q", "Month", "ShortMonth"})
 
     in
         FinalTable
