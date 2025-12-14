@@ -23,8 +23,10 @@ let
             ExtraValues.Error
         ),
 
+        ChangeType = Table.TransformColumnTypes(Table_Dates, {{"Date", type date}}),
+
         // 3. Añadir columnas de atributos del día (using CultureLocale parameter)
-        AddColumns_DayAttributes = Table.AddColumn(Table_Dates, "DayOfMonth", each Date.Day([Date]), type number),
+        AddColumns_DayAttributes = Table.AddColumn(ChangeType, "DayOfMonth", each Date.Day([Date]), type number),
             
         AddColumns_DayOfWeek = Table.AddColumn(AddColumns_DayAttributes, "DayOfWeek", each Date.DayOfWeek([Date], Day.Monday), type number),
 
