@@ -359,6 +359,9 @@ let
     Extract_Level4_Node = Table.AddColumn(Extract_Level3_Node, "Level 4 Node", each Text.BetweenDelimiters([Path], "|", "|", 2, 0), type text),
     Extract_Level5_Node = Table.AddColumn(Extract_Level4_Node, "Level 5 Node", each Text.BetweenDelimiters([Path], "|", "|", 3, 0), type text),
     Extract_Level6_Node = Table.AddColumn(Extract_Level5_Node, "Level 6 Node", each Text.BetweenDelimiters([Path], "|", "|", 4, 0), type text),
+
+    RenameColsBack = Table.RenameColumns(Extract_Level6_Node, {{"NodeKey", ChildKey}, {"NodeParentKey", ParentKey}, {"NodeName", LevelColumnName}}),
+
     // =======================================
     // 13. Control de loop infinito
     // =======================================
@@ -382,7 +385,7 @@ let
                 #"Endless Loop" = Last_IterationSnapshot
             ]
         else
-            Extract_Level6_Node
+            RenameColsBack
             in
                 Final_Output
         in
