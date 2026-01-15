@@ -57,7 +57,8 @@ let
         each  if [HasChildren] and [Parent] <> null then labels[ParentChild]
               else if [HasChildren]                 then labels[Parent]
               else if [Parent]     <> null          then labels[Child]
-              else                                       labels[Root]
+              else                                       labels[Root],
+        type text
     ),
 
     /* 2.4  Limpiar columnas y renombrar dinámicamente */
