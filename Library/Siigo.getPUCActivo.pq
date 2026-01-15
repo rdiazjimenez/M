@@ -1,5 +1,16 @@
-(connPUC as table) =>
+(connPUC as table, optional Idioma as text) =>
 let
+    // Si el usuario no da el parámetro o es distinto a "ES", el default es "EN"
+    lang = if Idioma <> null and Text.Upper(Idioma) = "ES" then "ES" else "EN",
+    
+    labels = [
+        ParentChild = if lang = "ES" then "Padre e Hijo" else "Parent & Child",
+        Parent      = if lang = "ES" then "Padre" else "Parent",
+        Child       = if lang = "ES" then "Hijo" else "Child",
+        Root        = if lang = "ES" then "Raíz" else "Root",
+        ColName     = if lang = "ES" then "Tipo" else "Type"
+    ],
+
     /*--------------------------------------------------
      * 1. Importar y depurar el PUC desde el Excel
      *-------------------------------------------------*/
@@ -18,42 +29,43 @@ let
 
     /* 2.1  Encontrar padre directo de cada código */
     AddParent = Table.AddColumn(
-        Base, "Parent",
+        Base, "Parent", 
         each List.Last(
                 List.Select(
-                    Base[Código],
+                    Base[Código], 
                     (prefix) => Text.StartsWith([Código], prefix) and [Código] <> prefix
                 )
-             ),
+             ), 
         type text
     ),
 
     /* 2.2  Detectar si tiene hijos                    */
     AddChildren = Table.AddColumn(
-        AddParent, "HasChildren",
+        AddParent, "HasChildren", 
         each List.AnyTrue(
                 List.Transform(
-                    Base[Código],
+                    Base[Código], 
                     (code) => Text.StartsWith(code, [Código]) and code <> [Código]
                 )
-             ),
+             ), 
         type logical
     ),
 
-    /* 2.3  Clasificar el nodo                         */
+    /* 2.3  Clasificar el nodo usando el record 'labels' */
     AddType = Table.AddColumn(
-        AddChildren, "Type",
-        each  if [HasChildren] and [Parent] <> null then "Parent & Child"
-              else if [HasChildren]                 then "Parent"
-              else if [Parent]     <> null          then "Child"
-              else                                       "Root"
+        AddChildren, "TempType", 
+        each  if [HasChildren] and [Parent] <> null then labels[ParentChild]
+              else if [HasChildren]                 then labels[Parent]
+              else if [Parent]     <> null          then labels[Child]
+              else                                       labels[Root]
     ),
 
-    /* 2.4  Limpiar columnas                           */
-    FinalTable = Table.SelectColumns(AddType, {"Código", "Nombre", "Activo", "Parent", "HasChildren", "Type"}),
+    /* 2.4  Limpiar columnas y renombrar dinámicamente */
+    FinalTable = Table.SelectColumns(AddType, {"Código", "Nombre", "Activo", "Parent", "HasChildren", "TempType"}),
+    RenameTypeCol = Table.RenameColumns(FinalTable, {{"TempType", labels[ColName]}}),
 
     /* 2.5  Propagar la marca “Sí” desde hijos a padres */
-    Buffered    = Table.Buffer(FinalTable),
+    Buffered    = Table.Buffer(RenameTypeCol),
     Sorted      = Table.Sort(Buffered, {{"Código", Order.Descending}}),
     InitialMap  = Record.FromList(Buffered[Activo], Buffered[Código]),
 
