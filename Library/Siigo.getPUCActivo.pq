@@ -1,5 +1,9 @@
-(connPUC as table, optional Idioma as text) =>
+(connPUC as table, optional Idioma as text, optional SoloActivos as logical) =>
 let
+
+    // Si SoloActivos es nulo, el default es true
+    mostrarSoloActivos = if SoloActivos = null then true else SoloActivos,
+
     // Si el usuario no da el parámetro o es distinto a "ES", el default es "EN"
     lang = if Idioma <> null and Text.Upper(Idioma) = "ES" then "ES" else "EN",
     
@@ -92,7 +96,10 @@ let
     RemovedOld = Table.RemoveColumns(WithPropagated, {"Activo"}),
     Renamed    = Table.RenameColumns(RemovedOld, {{"ActivoPropagado", "Activo"}}),
 
-    /* 2.6  Filtrar solamente los registros activos     */
-    Filtered = Table.SelectRows(Renamed, each ([Activo] = "Sí"))
+    /* 2.6  Filtrar condicionalmente según el nuevo parámetro */
+    Filtered = if mostrarSoloActivos then 
+                  Table.SelectRows(Renamed, each ([Activo] = "Sí")) 
+               else 
+                  Renamed
 in
     Filtered
