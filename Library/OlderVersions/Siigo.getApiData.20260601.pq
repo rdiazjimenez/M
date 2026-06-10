@@ -6,7 +6,7 @@
  optional pageSize as text) =>
 let
     endPointData = LibPQ("Siigo.getEndpointData")(EndPointData, EndPointID),
-    apiHeaders = LibPQ("Siigo.getApiConnInfo")(ApiConnInfo),
-    Source =  LibPQ("Api.getApiResult")(endPointData[endpointUrl], endPointData[Type], apiHeaders, params, pageNum, pageSize)
+    siigoApiConnInfo = LibPQ("Siigo.getApiConnInfo")(ApiConnInfo),
+    Source =  LibPQ("Api.getApiResult")(endPointData[endpointUrl], endPointData[Type], siigoApiConnInfo[api_headers], params, pageNum, pageSize)
 in
     Source
