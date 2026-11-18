@@ -1,20 +1,25 @@
+// =============================================
+// Function: Siigo.getNC
+// Description:
+//   Descarga todos los registros del endpoint "NC" entre dos fechas.
+// Parameters:
+//   - fechaInicio, fechaFin (date)
+//   - EndpointData (table): tabla de endpoints
+//   - ApiConnInfo (table | record): tabla de parámetros o headers ya construidos
+// Returns:
+//   - Tabla con una columna "results" (un record por registro).
+// History:
+//   - 2026-11-17: usa Siigo.getAllPages (un solo token, sin pedir dos veces la página 1).
+//     Versión anterior en OlderVersions/Siigo.getNC.20261117.pq
+// =============================================
+
 (fechaInicio as date,
  fechaFin as date,
  EndpointData as table,
- ApiConnInfo as table) =>
+ ApiConnInfo as any) =>
 let
     endpointID = "NC",
     getParams = "created_start=" & Date.ToText(fechaInicio, "yyyy-MM-dd") & "&created_end=" & Date.ToText(Date.AddDays(fechaFin, 1), "yyyy-MM-dd"),
-    pageSize = "100",
-
-    // Call the function with the parameters
-    ApiResult = LibPQ("Siigo.getApiData")(EndpointData, ApiConnInfo, endpointID, getParams, "1", pageSize),
-    total_results = Number.RoundUp(Number.From(ApiResult[pagination][total_results]) / Number.From(pageSize)),
-    ListNumbers = List.Numbers(1,total_results,1),
-    toTable = Table.FromList(ListNumbers, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
-    getPage = Table.AddColumn(toTable, "fetchApiRecords", each LibPQ("Siigo.getApiData")(EndpointData, ApiConnInfo, endpointID, getParams, Text.From([Column1]), pageSize)),
-    expandResultsList = Table.ExpandRecordColumn(getPage, "fetchApiRecords", {"pagination", "results", "_links"}, {"pagination", "results", "_links"}),
-    removeCols = Table.SelectColumns(expandResultsList,{"results"}),
-    expandResultsRecords = Table.ExpandListColumn(removeCols, "results")
+    Result = LibPQ("Siigo.getAllPages")(EndpointData, ApiConnInfo, endpointID, getParams, "100")
 in
-    expandResultsRecords
+    Result
