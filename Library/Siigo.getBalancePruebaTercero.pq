@@ -19,7 +19,9 @@
 // Notes:
 //   - month 13 = periodo de cierre; para las columnas de fecha se trata como diciembre.
 //   - Prefijos de un dígito (clases: "4") se excluyen del reporte por tercero con
-//     account_start/account_end, lo que reduce la descarga. Prefijos más largos
+//     account_start/account_end, lo que reduce la descarga. Como Siigo exige que
+//     esas cuentas existan, los límites son la primera y la última cuenta (orden de
+//     texto) que aparecen en el balance general dentro de cada rango de clases. Prefijos más largos
 //     ("4135") salen correctos, pero se filtran localmente (sin ahorro).
 //   - Si el filtro ya trae account_start/account_end, el reporte por tercero se pide
 //     con ese rango tal cual y la separación se hace localmente.
@@ -90,8 +92,6 @@ let
 
     conOpcion = () =>
         let
-            CUENTA_FINAL_RELLENO = "999999999",   // "3" → "3999999999"
-
             headers = if ApiConnInfo is record then ApiConnInfo
                       else LibPQ("Siigo.getApiConnInfo")(ApiConnInfo),
 
@@ -106,23 +106,7 @@ let
                          {"endpointUrl", each Text.Replace(_, "test-balance-report-by-thirdparty", "test-balance-report")}},
                         MissingField.Ignore)}),
 
-            // Parte con tercero: rangos de clases consecutivas que no van sin tercero
-            clasesCon  = List.Select(clases, each not List.Contains(prefijos, _)),
-            rangos     = List.Accumulate(clasesCon, {}, (acc, c) =>
-                             if List.Count(acc) > 0 and Number.From(List.Last(acc){1}) + 1 = Number.From(c)
-                             then List.RemoveLastN(acc, 1) & {{List.Last(acc){0}, c}}
-                             else acc & {{c, c}}),
-            tieneRango = Record.HasFields(filtro, "account_start") or Record.HasFields(filtro, "account_end"),
-            bodies     =
-                if List.Count(clasesCon) = 0 then {}
-                else if tieneRango or List.Count(clasesCon) = 9 then {filtroBalanceTercero}
-                else List.Transform(rangos, (r) => Text.FromBinary(Json.FromValue(
-                         filtro & [account_start = r{0}, account_end = r{1} & CUENTA_FINAL_RELLENO]))),
-            conTercero = Table.SelectRows(
-                             Table.Combine({#table(columnas, {})} & List.Transform(bodies, each leerTercero(_, headers))),
-                             each not esSinTercero([Código cuenta contable])),
-
-            // Parte sin tercero: balance general (BP)
+            // Balance general (BP): da las cuentas sin tercero y los límites de los rangos
             libro   = LibPQ("Siigo.getAzureFileFromURL")(
                           LibPQ("Siigo.getApiData")(endpoints, headers, "BP", filtroBalanceTercero)),
             hoja    = Table.SelectRows(libro, each [Kind] = "Sheet"){0}[Data],
@@ -141,11 +125,39 @@ let
                                   "Al balance general le faltan columnas: " & Text.Combine(faltantes, ", "),
                                   [ColumnasEncontradas = Text.Combine(Table.ColumnNames(general), ", ")])
                          else Table.SelectColumns(general, requeridas),
-            // Solo filas de cuenta (quita totales y pies) que van sin tercero
-            soloCuentas = Table.SelectRows(validada, each
-                              let c = Text.Trim(Text.From([Código cuenta contable] ?? ""))
-                              in c <> "" and Text.Contains("0123456789", Text.Start(c, 1)) and esSinTercero(c)),
-            sinTercero  = completar(Table.SelectColumns(soloCuentas, List.Transform(tipos, each _{0}), MissingField.UseNull))
+            // Solo filas de cuenta (quita totales y pies)
+            codigoTexto = Table.TransformColumns(validada,
+                              {{"Código cuenta contable", each Text.Trim(Text.From(_ ?? "")), type text}}),
+            soloCuentas = Table.Buffer(Table.SelectRows(codigoTexto, each
+                              [Código cuenta contable] <> ""
+                              and Text.Contains("0123456789", Text.Start([Código cuenta contable], 1)))),
+            sinTercero  = completar(Table.SelectColumns(
+                              Table.SelectRows(soloCuentas, each esSinTercero([Código cuenta contable])),
+                              List.Transform(tipos, each _{0}), MissingField.UseNull)),
+            codigos     = List.Buffer(soloCuentas[Código cuenta contable]),
+
+            // Parte con tercero: rangos de clases consecutivas que no van sin tercero
+            clasesCon  = List.Select(clases, each not List.Contains(prefijos, _)),
+            rangos     = List.Accumulate(clasesCon, {}, (acc, c) =>
+                             if List.Count(acc) > 0 and Number.From(List.Last(acc){1}) + 1 = Number.From(c)
+                             then List.RemoveLastN(acc, 1) & {{List.Last(acc){0}, c}}
+                             else acc & {{c, c}}),
+            tieneRango = Record.HasFields(filtro, "account_start") or Record.HasFields(filtro, "account_end"),
+            bodies     =
+                if List.Count(clasesCon) = 0 then {}
+                else if tieneRango or List.Count(clasesCon) = 9 then {filtroBalanceTercero}
+                else List.RemoveNulls(List.Transform(rangos, (r) =>
+                         let
+                             // Siigo exige cuentas que existan: se usan la primera y la última
+                             // cuenta del balance general dentro del rango de clases
+                             enRango = List.Select(codigos, each Text.Start(_, 1) >= r{0} and Text.Start(_, 1) <= r{1})
+                         in
+                             if List.Count(enRango) = 0 then null
+                             else Text.FromBinary(Json.FromValue(
+                                 filtro & [account_start = List.Min(enRango), account_end = List.Max(enRango)])))),
+            conTercero = Table.SelectRows(
+                             Table.Combine({#table(columnas, {})} & List.Transform(bodies, each leerTercero(_, headers))),
+                             each not esSinTercero([Código cuenta contable]))
         in
             Table.SelectColumns(Table.Combine({conTercero, sinTercero}), columnas),
 
