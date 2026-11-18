@@ -41,8 +41,8 @@ let
     // ---------- Parámetros comunes ----------
     filtro    = Json.Document(filtroBalanceTercero),
     yearNum   = filtro[year],
-    monthFrom = Number.Min({filtro[month_start], 12}),
-    monthTo   = Number.Min({filtro[month_end], 12}),
+    monthFrom = List.Min({filtro[month_start], 12}),
+    monthTo   = List.Min({filtro[month_end], 12}),
     startDate = #date(yearNum, monthFrom, 1),
     endDate   = Date.EndOfMonth(#date(yearNum, monthTo, 1)),
 
